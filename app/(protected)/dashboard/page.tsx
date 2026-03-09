@@ -43,7 +43,7 @@ export default async function DashboardPage() {
     return null;
   }
 
-  const [{ data: categorias }, { data: ingresos }, { data: movimientos }] = await Promise.all([
+  const [{ data: categorias }, { data: ingresos }, { data: movimientos, error: movimientosError }] = await Promise.all([
     supabase.from("categorias").select("id,nombre,porcentaje").eq("user_id", user.id),
     supabase.from("ingresos").select("id").eq("user_id", user.id),
     supabase.from("movimientos").select("categoria_id,tipo,monto").eq("user_id", user.id)
@@ -86,6 +86,11 @@ export default async function DashboardPage() {
 
   return (
     <section className="space-y-5">
+      {movimientosError ? (
+        <div className="rounded-xl border border-yellow-700 bg-yellow-950/40 p-3 text-sm text-yellow-200">
+          Ejecuta `supabase/002_movimientos_y_estadisticas.sql` para habilitar saldo disponible por categoria.
+        </div>
+      ) : null}
       <div className="rounded-xl border border-border bg-card p-4">
         <h1 className="text-lg font-semibold text-white">Dashboard</h1>
         <p className="mt-1 text-sm text-gray-400">Distribucion historica por categoria.</p>

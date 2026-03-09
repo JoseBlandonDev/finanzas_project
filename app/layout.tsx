@@ -17,11 +17,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className="dark">
       <body className={`${inter.className} min-h-screen bg-background text-gray-100`}>
         <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-10 pt-4 sm:px-6">
-          <header className="mb-6 flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
-            <Link href="/" className="text-base font-semibold tracking-tight text-white">
-              Finanzas SaaS
-            </Link>
-            <nav className="flex gap-3 text-sm text-gray-300">
+          <header className="mb-6 rounded-xl border border-border bg-card px-4 py-3">
+            <div className="mb-3 flex items-center justify-between">
+              <Link href="/" className="text-base font-semibold tracking-tight text-white">
+                Finanzas SaaS
+              </Link>
+            </div>
+            <nav className="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-gray-300">
               <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
               <Link href="/categorias" className="hover:text-white">Categorias</Link>
               <Link href="/nuevo-ingreso" className="hover:text-white">Nuevo ingreso</Link>

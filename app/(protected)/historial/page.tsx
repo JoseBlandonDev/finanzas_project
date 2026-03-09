@@ -63,7 +63,7 @@ export default async function HistorialPage({ searchParams }: HistorialPageProps
 
   const range = getMonthRange(searchParams.mes);
 
-  const [{ data: ingresos }, { data: movimientos }] = await Promise.all([
+  const [{ data: ingresos }, { data: movimientos, error: movimientosError }] = await Promise.all([
     supabase
       .from("ingresos")
       .select("id,monto_total,tipo,descripcion,fecha")
@@ -85,6 +85,11 @@ export default async function HistorialPage({ searchParams }: HistorialPageProps
 
   return (
     <section className="space-y-4">
+      {movimientosError ? (
+        <article className="rounded-xl border border-yellow-700 bg-yellow-950/40 p-4 text-sm text-yellow-200">
+          Ejecuta en Supabase el script `supabase/002_movimientos_y_estadisticas.sql` para ver movimientos en el historial.
+        </article>
+      ) : null}
       <header className="rounded-xl border border-border bg-card p-4">
         <h1 className="text-lg font-semibold text-white">Historial</h1>
         <form className="mt-3 flex items-center gap-3" method="get">

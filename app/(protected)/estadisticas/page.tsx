@@ -32,7 +32,7 @@ export default async function EstadisticasPage() {
     return null;
   }
 
-  const [{ data: ingresos }, { data: movimientos }, { data: categorias }] = await Promise.all([
+  const [{ data: ingresos }, { data: movimientos, error: movimientosError }, { data: categorias }] = await Promise.all([
     supabase.from("ingresos").select("*").eq("user_id", user.id).order("fecha", { ascending: true }),
     supabase.from("movimientos").select("*").eq("user_id", user.id).order("fecha", { ascending: true }),
     supabase.from("categorias").select("*").eq("user_id", user.id)
@@ -78,6 +78,11 @@ export default async function EstadisticasPage() {
 
   return (
     <section className="space-y-4">
+      {movimientosError ? (
+        <article className="rounded-xl border border-yellow-700 bg-yellow-950/40 p-4 text-sm text-yellow-200">
+          Ejecuta en Supabase el script `supabase/002_movimientos_y_estadisticas.sql` para habilitar estadisticas completas.
+        </article>
+      ) : null}
       <article className="rounded-xl border border-border bg-card p-4">
         <h1 className="text-lg font-semibold text-white">Panel estadistico</h1>
         <p className="mt-1 text-sm text-gray-400">Ingresos y gastos por mes (ultimos 12 meses).</p>

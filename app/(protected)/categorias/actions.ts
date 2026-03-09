@@ -30,7 +30,7 @@ async function validarTotalPorcentajes(userId: string, candidate: number, exclud
     .filter((categoria) => (excludeId ? categoria.id !== excludeId : true))
     .reduce((sum, categoria) => sum + Number(categoria.porcentaje), 0);
 
-  return Math.abs(totalActual + candidate - 100) < 0.01;
+  return totalActual + candidate <= 100.0001;
 }
 
 export async function crearCategoria(formData: FormData): Promise<ActionResult> {
@@ -59,7 +59,7 @@ export async function crearCategoria(formData: FormData): Promise<ActionResult> 
 
   const totalValido = await validarTotalPorcentajes(user.id, porcentaje);
   if (!totalValido) {
-    return { ok: false, message: "La suma total de porcentajes debe ser exactamente 100%." };
+    return { ok: false, message: "La suma total no puede superar 100%." };
   }
 
   const { error } = await supabase.from("categorias").insert({
@@ -109,7 +109,7 @@ export async function actualizarCategoria(formData: FormData): Promise<ActionRes
 
   const totalValido = await validarTotalPorcentajes(user.id, porcentaje, id);
   if (!totalValido) {
-    return { ok: false, message: "La suma total de porcentajes debe ser exactamente 100%." };
+    return { ok: false, message: "La suma total no puede superar 100%." };
   }
 
   const { error } = await supabase

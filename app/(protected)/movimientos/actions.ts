@@ -7,10 +7,15 @@ import type { MovimientoInsert } from "@/types/database";
 
 const TIPOS = new Set(["gasto", "ahorro", "inversion", "transferencia"]);
 
-export async function registrarMovimiento(formData: FormData): Promise<void> {
+interface ActionResult {
+  ok: boolean;
+  message: string;
+}
+
+export async function registrarMovimiento(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   if (!supabase) {
-    return;
+    return { ok: false, message: "Variables de entorno faltantes." };
   }
 
   const {
@@ -18,7 +23,7 @@ export async function registrarMovimiento(formData: FormData): Promise<void> {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return;
+    return { ok: false, message: "No autenticado." };
   }
 
   const tipoRaw = String(formData.get("tipo") ?? "gasto");
@@ -29,7 +34,7 @@ export async function registrarMovimiento(formData: FormData): Promise<void> {
   const categoriaId = categoriaIdRaw.length > 0 ? categoriaIdRaw : null;
 
   if (!Number.isFinite(monto) || monto <= 0) {
-    return;
+    return { ok: false, message: "Monto invalido." };
   }
 
   const payload: MovimientoInsert = {
@@ -42,12 +47,12 @@ export async function registrarMovimiento(formData: FormData): Promise<void> {
 
   const { error } = await supabase.from("movimientos").insert(payload);
   if (error) {
-    return;
+    return { ok: false, message: error.message };
   }
 
   revalidatePath("/movimientos");
   revalidatePath("/dashboard");
   revalidatePath("/estadisticas");
 
-  return;
+  return { ok: true, message: "Movimiento registrado correctamente." };
 }

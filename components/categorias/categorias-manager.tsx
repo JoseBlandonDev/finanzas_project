@@ -17,12 +17,21 @@ export function CategoriasManager({ categorias }: Props) {
     () => categorias.reduce((sum, categoria) => sum + Number(categoria.porcentaje), 0),
     [categorias]
   );
+  const restante = Math.max(0, 100 - totalPorcentaje);
+  const totalCompleto = Math.abs(totalPorcentaje - 100) < 0.01;
 
   return (
     <div className="space-y-5">
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-lg font-semibold text-white">Nueva categoria</h2>
-        <p className="mt-1 text-sm text-gray-400">Total actual: {totalPorcentaje.toFixed(2)}%</p>
+        <p className="mt-1 text-sm text-gray-400">
+          Total actual: {totalPorcentaje.toFixed(2)}% - Restante: {restante.toFixed(2)}%
+        </p>
+        <p className={`mt-1 text-xs ${totalCompleto ? "text-green-400" : "text-amber-300"}`}>
+          {totalCompleto
+            ? "Listo: ya puedes registrar ingresos."
+            : "Debes completar 100% para poder registrar ingresos."}
+        </p>
 
         <form
           className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2"
