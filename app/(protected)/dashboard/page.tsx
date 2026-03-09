@@ -18,6 +18,12 @@ interface IngresoIdRecord {
   id: string;
 }
 
+interface GastoCategoriaRecord {
+  categoria_id: string | null;
+  tipo: "gasto" | "ahorro" | "inversion" | "transferencia";
+  monto: number;
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 
@@ -37,14 +43,16 @@ export default async function DashboardPage() {
     return null;
   }
 
-  const [{ data: categorias }, { data: ingresos }] = await Promise.all([
+  const [{ data: categorias }, { data: ingresos }, { data: movimientos }] = await Promise.all([
     supabase.from("categorias").select("id,nombre,porcentaje").eq("user_id", user.id),
-    supabase.from("ingresos").select("id").eq("user_id", user.id)
+    supabase.from("ingresos").select("id").eq("user_id", user.id),
+    supabase.from("movimientos").select("categoria_id,tipo,monto").eq("user_id", user.id)
   ]);
 
   const categoriasRows = (categorias ?? []) as CategoriaDashboard[];
   const ingresosRows = (ingresos ?? []) as IngresoIdRecord[];
   const ingresoIds = ingresosRows.map((item) => item.id);
+  const movimientosRows = (movimientos ?? []) as GastoCategoriaRecord[];
 
   let distribuciones: DistribucionRecord[] = [];
   if (ingresoIds.length > 0) {
@@ -57,9 +65,18 @@ export default async function DashboardPage() {
   }
 
   const acumulado = new Map<string, number>();
+  const gastadoPorCategoria = new Map<string, number>();
   for (const row of distribuciones) {
     const prev = acumulado.get(row.categoria_id) ?? 0;
     acumulado.set(row.categoria_id, prev + Number(row.monto_asignado));
+  }
+
+  for (const row of movimientosRows) {
+    if (!row.categoria_id || row.tipo !== "gasto") {
+      continue;
+    }
+    const prev = gastadoPorCategoria.get(row.categoria_id) ?? 0;
+    gastadoPorCategoria.set(row.categoria_id, prev + Number(row.monto));
   }
 
   const pieData = categoriasRows.map((categoria) => ({
@@ -78,11 +95,13 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {categoriasRows.map((categoria) => {
           const monto = acumulado.get(categoria.id) ?? 0;
+          const gastado = gastadoPorCategoria.get(categoria.id) ?? 0;
+          const disponible = Math.max(monto - gastado, 0);
           return (
             <article key={categoria.id} className="rounded-xl border border-border bg-card p-4">
               <p className="text-sm text-gray-400">{categoria.nombre}</p>
-              <p className="mt-1 text-xl font-semibold text-white">{toCurrency(monto)}</p>
-              <p className="mt-1 text-xs text-gray-500">{categoria.porcentaje}% configurado</p>
+              <p className="mt-1 text-xl font-semibold text-white">{toCurrency(disponible)}</p>
+              <p className="mt-1 text-xs text-gray-500">Asignado: {toCurrency(monto)} | Gastado: {toCurrency(gastado)}</p>
             </article>
           );
         })}

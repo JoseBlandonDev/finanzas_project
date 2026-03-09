@@ -36,6 +36,8 @@ export async function registrarIngreso(formData: FormData): Promise<ActionResult
 
   const montoTotal = Number(formData.get("monto_total") ?? 0);
   const descripcion = String(formData.get("descripcion") ?? "").trim();
+  const tipoIngresoRaw = String(formData.get("tipo_ingreso") ?? "variable");
+  const tipoIngreso = tipoIngresoRaw === "fijo" ? "fijo" : "variable";
 
   if (!Number.isFinite(montoTotal) || montoTotal <= 0) {
     return { ok: false, message: "Monto total invalido." };
@@ -98,6 +100,7 @@ export async function registrarIngreso(formData: FormData): Promise<ActionResult
     .insert({
       user_id: user.id,
       monto_total: montoTotal,
+      tipo: tipoIngreso,
       descripcion: descripcion || null
     })
     .select("id")
@@ -123,6 +126,7 @@ export async function registrarIngreso(formData: FormData): Promise<ActionResult
   revalidatePath("/dashboard");
   revalidatePath("/historial");
   revalidatePath("/nuevo-ingreso");
+  revalidatePath("/estadisticas");
 
   const warningText = resultado.advertencias.length > 0 ? ` Advertencias: ${resultado.advertencias.join(" | ")}` : "";
   return { ok: true, message: `Ingreso registrado correctamente.${warningText}` };

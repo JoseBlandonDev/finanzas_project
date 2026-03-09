@@ -52,6 +52,7 @@ export interface Database {
           id: string;
           user_id: string;
           monto_total: number;
+          tipo: "fijo" | "variable";
           descripcion: string | null;
           fecha: string;
           created_at: string;
@@ -60,6 +61,7 @@ export interface Database {
           id?: string;
           user_id: string;
           monto_total: number;
+          tipo?: "fijo" | "variable";
           descripcion?: string | null;
           fecha?: string;
           created_at?: string;
@@ -68,6 +70,7 @@ export interface Database {
           id?: string;
           user_id?: string;
           monto_total?: number;
+          tipo?: "fijo" | "variable";
           descripcion?: string | null;
           fecha?: string;
           created_at?: string;
@@ -113,6 +116,47 @@ export interface Database {
           }
         ];
       };
+      movimientos: {
+        Row: {
+          id: string;
+          user_id: string;
+          categoria_id: string | null;
+          tipo: "gasto" | "ahorro" | "inversion" | "transferencia";
+          monto: number;
+          descripcion: string | null;
+          fecha: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          categoria_id?: string | null;
+          tipo: "gasto" | "ahorro" | "inversion" | "transferencia";
+          monto: number;
+          descripcion?: string | null;
+          fecha?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          categoria_id?: string | null;
+          tipo?: "gasto" | "ahorro" | "inversion" | "transferencia";
+          monto?: number;
+          descripcion?: string | null;
+          fecha?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "movimientos_categoria_id_fkey";
+            columns: ["categoria_id"];
+            isOneToOne: false;
+            referencedRelation: "categorias";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -130,3 +174,6 @@ export type IngresoInsert = Database["public"]["Tables"]["ingresos"]["Insert"];
 
 export type Distribucion = Database["public"]["Tables"]["distribuciones"]["Row"];
 export type DistribucionInsert = Database["public"]["Tables"]["distribuciones"]["Insert"];
+
+export type Movimiento = Database["public"]["Tables"]["movimientos"]["Row"];
+export type MovimientoInsert = Database["public"]["Tables"]["movimientos"]["Insert"];

@@ -45,6 +45,14 @@ export function NuevoIngresoForm({ categorias, acumuladoPorCategoria }: Props) {
         <p className="mt-1 text-sm text-gray-400">Vista previa en tiempo real de la distribucion.</p>
 
         <div className="mt-4 grid grid-cols-1 gap-3">
+          <select
+            name="tipo_ingreso"
+            defaultValue="variable"
+            className="rounded-lg border border-border bg-[#111] px-3 py-2"
+          >
+            <option value="variable">Ingreso variable</option>
+            <option value="fijo">Ingreso fijo</option>
+          </select>
           <input
             name="monto_total"
             type="number"
