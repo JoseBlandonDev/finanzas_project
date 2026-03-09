@@ -13,7 +13,13 @@ export function createClient(): SupabaseClient<Database> | null {
   }
 
   if (!browserClient) {
-    browserClient = createBrowserClient<Database>(env.url, env.anonKey);
+    browserClient = createBrowserClient<Database>(env.url, env.anonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
   }
 
   return browserClient;

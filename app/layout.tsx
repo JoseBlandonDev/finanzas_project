@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
 
+import { AuthUserMenu } from "@/components/shared/auth-user-menu";
+
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/" className="text-base font-semibold tracking-tight text-white">
                 Finanzas SaaS
               </Link>
+              <AuthUserMenu />
             </div>
             <nav className="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-gray-300">
               <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
